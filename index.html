@@ -87,6 +87,7 @@
       .nav-links {
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
         gap: 22px;
         color: var(--muted);
         font-size: 0.95rem;
@@ -174,13 +175,14 @@
       }
 
       .visual {
-        position: relative;
-        min-height: 520px;
+        display: grid;
+        gap: 16px;
+        min-width: 0;
       }
 
       .workspace {
-        position: absolute;
-        inset: 32px 0 0 28px;
+        position: relative;
+        min-height: 430px;
         overflow: hidden;
         border: 1px solid rgba(36, 49, 61, 0.11);
         border-radius: 8px;
@@ -263,10 +265,9 @@
       }
 
       .floating-card {
-        position: absolute;
-        right: 10px;
-        bottom: 34px;
-        width: min(310px, 78%);
+        position: relative;
+        justify-self: end;
+        width: min(100%, 340px);
         padding: 20px;
         border: 1px solid rgba(36, 49, 61, 0.12);
         border-radius: 8px;
@@ -281,7 +282,7 @@
 
       .metric {
         display: grid;
-        grid-template-columns: 52px 1fr;
+        grid-template-columns: 52px minmax(0, 1fr);
         gap: 14px;
         align-items: center;
         color: var(--muted);
@@ -292,6 +293,15 @@
         color: #396f5e;
         font-size: 2rem;
         font-weight: 900;
+      }
+
+      .metric p,
+      .card p,
+      .case p,
+      .list-item p,
+      .note p,
+      .hero-copy {
+        overflow-wrap: anywhere;
       }
 
       section {
@@ -495,21 +505,14 @@
         }
 
         .visual {
-          display: grid;
           gap: 14px;
-          min-height: auto;
         }
 
         .workspace {
-          position: relative;
-          inset: auto;
           min-height: 360px;
         }
 
         .floating-card {
-          position: relative;
-          right: auto;
-          bottom: auto;
           width: 100%;
         }
 
@@ -541,7 +544,7 @@
 
         .nav-links {
           width: 100%;
-          justify-content: space-between;
+          justify-content: flex-start;
           gap: 10px;
           font-size: 0.88rem;
         }
@@ -555,16 +558,21 @@
           width: 100%;
         }
 
-        .visual {
-          min-height: auto;
-        }
-
         .workspace {
           min-height: 350px;
         }
 
         .floating-card {
           padding: 18px;
+        }
+
+        .metric {
+          grid-template-columns: 44px minmax(0, 1fr);
+          gap: 12px;
+        }
+
+        .metric-value {
+          font-size: 1.75rem;
         }
 
         section {
