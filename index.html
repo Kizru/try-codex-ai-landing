@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Codex AI - умный помощник для разработки</title>
+    <style>
+      :root {
+        --ink: #24313d;
+        --muted: #647381;
+        --line: #d9e2e7;
+        --paper: #fffdf8;
+        --mint: #dff4ed;
+        --peach: #fde7d9;
+        --sky: #dbeaf9;
+        --lilac: #ebe3fb;
+        --sage: #b9d8cd;
+        --coral: #e99e82;
+        --blue: #8ab3d6;
+        --shadow: 0 18px 48px rgba(67, 87, 104, 0.14);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 12% 10%, rgba(253, 231, 217, 0.9), transparent 28rem),
+          radial-gradient(circle at 88% 4%, rgba(219, 234, 249, 0.9), transparent 24rem),
+          linear-gradient(180deg, #fffaf4 0%, #f6fbf9 42%, #fffdf8 100%);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        letter-spacing: 0;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .shell {
+        width: min(1120px, calc(100% - 40px));
+        margin: 0 auto;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(255, 253, 248, 0.84);
+        border-bottom: 1px solid rgba(217, 226, 231, 0.8);
+        backdrop-filter: blur(16px);
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 70px;
+        gap: 24px;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border: 1px solid rgba(36, 49, 61, 0.14);
+        border-radius: 8px;
+        background: linear-gradient(135deg, var(--mint), var(--sky));
+        box-shadow: 0 8px 22px rgba(138, 179, 214, 0.25);
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .nav-links a:hover {
+        color: var(--ink);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+        align-items: center;
+        gap: 48px;
+        min-height: calc(100svh - 70px);
+        padding: 70px 0 56px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 18px;
+        color: #4f6f63;
+        font-size: 0.92rem;
+        font-weight: 700;
+      }
+
+      .pulse {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--sage);
+        box-shadow: 0 0 0 7px rgba(185, 216, 205, 0.28);
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        max-width: 760px;
+        margin-bottom: 22px;
+        font-size: clamp(2.55rem, 7vw, 5.8rem);
+        line-height: 0.98;
+        letter-spacing: 0;
+      }
+
+      .hero-copy {
+        max-width: 650px;
+        color: var(--muted);
+        font-size: clamp(1rem, 2vw, 1.2rem);
+        line-height: 1.72;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 30px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 0 20px;
+        border: 1px solid rgba(36, 49, 61, 0.15);
+        border-radius: 8px;
+        font-weight: 800;
+      }
+
+      .button.primary {
+        background: #24313d;
+        color: #fffdf8;
+        box-shadow: 0 14px 30px rgba(36, 49, 61, 0.2);
+      }
+
+      .button.secondary {
+        background: rgba(255, 255, 255, 0.72);
+      }
+
+      .visual {
+        position: relative;
+        min-height: 520px;
+      }
+
+      .workspace {
+        position: absolute;
+        inset: 32px 0 0 28px;
+        overflow: hidden;
+        border: 1px solid rgba(36, 49, 61, 0.11);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.72);
+        box-shadow: var(--shadow);
+      }
+
+      .window-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 42px;
+        padding: 0 16px;
+        border-bottom: 1px solid rgba(217, 226, 231, 0.8);
+        background: rgba(255, 253, 248, 0.82);
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+
+      .dot:nth-child(1) {
+        background: var(--coral);
+      }
+
+      .dot:nth-child(2) {
+        background: #efc36f;
+      }
+
+      .dot:nth-child(3) {
+        background: var(--sage);
+      }
+
+      .code-area {
+        display: grid;
+        gap: 12px;
+        padding: 22px;
+      }
+
+      .line {
+        height: 13px;
+        border-radius: 99px;
+        background: #e8eef1;
+      }
+
+      .line.wide {
+        width: 84%;
+        background: var(--sky);
+      }
+
+      .line.mid {
+        width: 68%;
+        background: var(--lilac);
+      }
+
+      .line.short {
+        width: 46%;
+        background: var(--mint);
+      }
+
+      .note {
+        margin-top: 8px;
+        padding: 18px;
+        border: 1px solid rgba(36, 49, 61, 0.1);
+        border-radius: 8px;
+        background: #fff7ee;
+      }
+
+      .note strong {
+        display: block;
+        margin-bottom: 7px;
+      }
+
+      .note p {
+        margin-bottom: 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .floating-card {
+        position: absolute;
+        right: 10px;
+        bottom: 34px;
+        width: min(310px, 78%);
+        padding: 20px;
+        border: 1px solid rgba(36, 49, 61, 0.12);
+        border-radius: 8px;
+        background: #f8fff9;
+        box-shadow: 0 16px 38px rgba(71, 104, 95, 0.16);
+      }
+
+      .floating-card h3 {
+        margin-bottom: 10px;
+        font-size: 1rem;
+      }
+
+      .metric {
+        display: grid;
+        grid-template-columns: 52px 1fr;
+        gap: 14px;
+        align-items: center;
+        color: var(--muted);
+        line-height: 1.45;
+      }
+
+      .metric-value {
+        color: #396f5e;
+        font-size: 2rem;
+        font-weight: 900;
+      }
+
+      section {
+        padding: 72px 0;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 28px;
+        margin-bottom: 28px;
+      }
+
+      h2 {
+        max-width: 680px;
+        margin-bottom: 0;
+        font-size: clamp(2rem, 4vw, 3.45rem);
+        line-height: 1.04;
+        letter-spacing: 0;
+      }
+
+      .section-head p {
+        max-width: 390px;
+        margin-bottom: 0;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .benefits {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .card {
+        min-height: 210px;
+        padding: 24px;
+        border: 1px solid rgba(36, 49, 61, 0.1);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.68);
+        box-shadow: 0 10px 28px rgba(67, 87, 104, 0.08);
+      }
+
+      .card:nth-child(2n) {
+        background: rgba(223, 244, 237, 0.65);
+      }
+
+      .card:nth-child(3n) {
+        background: rgba(219, 234, 249, 0.65);
+      }
+
+      .icon {
+        display: grid;
+        width: 44px;
+        height: 44px;
+        margin-bottom: 24px;
+        place-items: center;
+        border-radius: 8px;
+        background: #fffdf8;
+        color: var(--ink);
+        font-weight: 900;
+        box-shadow: inset 0 0 0 1px rgba(36, 49, 61, 0.1);
+      }
+
+      .card h3 {
+        margin-bottom: 10px;
+        font-size: 1.08rem;
+      }
+
+      .card p {
+        margin-bottom: 0;
+        color: var(--muted);
+        line-height: 1.62;
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: 0.88fr 1.12fr;
+        gap: 24px;
+        align-items: start;
+      }
+
+      .soft-panel {
+        padding: 30px;
+        border: 1px solid rgba(36, 49, 61, 0.1);
+        border-radius: 8px;
+        background: rgba(235, 227, 251, 0.52);
+      }
+
+      .soft-panel h2 {
+        margin-bottom: 18px;
+      }
+
+      .soft-panel p {
+        margin-bottom: 0;
+        color: var(--muted);
+        line-height: 1.68;
+      }
+
+      .list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .list-item {
+        display: grid;
+        grid-template-columns: 32px 1fr;
+        gap: 14px;
+        padding: 18px;
+        border: 1px solid rgba(36, 49, 61, 0.1);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.72);
+      }
+
+      .list-item span {
+        display: grid;
+        width: 32px;
+        height: 32px;
+        place-items: center;
+        border-radius: 8px;
+        background: var(--peach);
+        font-weight: 900;
+      }
+
+      .list-item h3 {
+        margin-bottom: 5px;
+        font-size: 1rem;
+      }
+
+      .list-item p {
+        margin-bottom: 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .use-cases {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .case {
+        min-height: 150px;
+        padding: 20px;
+        border: 1px solid rgba(36, 49, 61, 0.1);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.65);
+      }
+
+      .case strong {
+        display: block;
+        margin-bottom: 10px;
+      }
+
+      .case p {
+        margin-bottom: 0;
+        color: var(--muted);
+        line-height: 1.52;
+      }
+
+      .summary {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 28px;
+        align-items: center;
+        padding: 34px;
+        border: 1px solid rgba(36, 49, 61, 0.1);
+        border-radius: 8px;
+        background: linear-gradient(135deg, rgba(253, 231, 217, 0.82), rgba(219, 234, 249, 0.78));
+      }
+
+      .summary h2 {
+        margin-bottom: 12px;
+      }
+
+      .summary p {
+        max-width: 720px;
+        margin-bottom: 0;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      footer {
+        padding: 30px 0 42px;
+        color: var(--muted);
+        font-size: 0.94rem;
+      }
+
+      @media (max-width: 920px) {
+        .hero,
+        .split,
+        .summary {
+          grid-template-columns: 1fr;
+        }
+
+        .hero {
+          min-height: auto;
+          padding-top: 48px;
+        }
+
+        .visual {
+          min-height: 430px;
+        }
+
+        .benefits,
+        .use-cases {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .section-head {
+          display: block;
+        }
+
+        .section-head p {
+          margin-top: 16px;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .shell {
+          width: min(100% - 28px, 1120px);
+        }
+
+        .nav {
+          align-items: flex-start;
+          flex-direction: column;
+          min-height: auto;
+          padding: 16px 0;
+        }
+
+        .nav-links {
+          width: 100%;
+          justify-content: space-between;
+          gap: 10px;
+          font-size: 0.88rem;
+        }
+
+        .hero {
+          padding-top: 38px;
+        }
+
+        .actions,
+        .button {
+          width: 100%;
+        }
+
+        .visual {
+          min-height: 390px;
+        }
+
+        .workspace {
+          inset: 0;
+        }
+
+        .floating-card {
+          right: 12px;
+          bottom: 12px;
+        }
+
+        section {
+          padding: 54px 0;
+        }
+
+        .benefits,
+        .use-cases {
+          grid-template-columns: 1fr;
+        }
+
+        .card,
+        .soft-panel,
+        .summary {
+          padding: 22px;
+        }
+
+        .list-item {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <nav class="shell nav" aria-label="Главная навигация">
+        <a class="brand" href="#top" aria-label="Codex AI">
+          <span class="brand-mark">AI</span>
+          <span>Codex AI</span>
+        </a>
+        <div class="nav-links">
+          <a href="#benefits">Плюсы</a>
+          <a href="#limits">Минусы</a>
+          <a href="#use">Сценарии</a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="shell hero">
+        <div>
+          <p class="eyebrow"><span class="pulse"></span> ИИ-помощник для кода, идей и быстрых прототипов</p>
+          <h1>Codex помогает превращать мысль в рабочий результат.</h1>
+          <p class="hero-copy">
+            Это не магическая кнопка, а сильный напарник: он читает контекст, пишет код, объясняет решения,
+            находит ошибки и ускоряет рутину. Лучший эффект появляется, когда человек задает направление,
+            а ИИ берет на себя тяжелую черновую работу.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="#benefits">Посмотреть преимущества</a>
+            <a class="button secondary" href="#limits">Узнать ограничения</a>
+          </div>
+        </div>
+
+        <div class="visual" aria-label="Иллюстрация рабочего пространства Codex">
+          <div class="workspace">
+            <div class="window-bar">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+            <div class="code-area">
+              <div class="line wide"></div>
+              <div class="line mid"></div>
+              <div class="line short"></div>
+              <div class="line wide"></div>
+              <div class="line mid"></div>
+              <div class="note">
+                <strong>Задача понята</strong>
+                <p>Собрать лендинг, выделить сильные стороны, честно показать риски и сохранить спокойный визуальный тон.</p>
+              </div>
+              <div class="line wide"></div>
+              <div class="line short"></div>
+            </div>
+          </div>
+          <aside class="floating-card">
+            <h3>Темп работы</h3>
+            <div class="metric">
+              <div class="metric-value">x3</div>
+              <p>быстрее первые версии, когда требования уже понятны и есть хороший контекст.</p>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="benefits" class="shell">
+        <div class="section-head">
+          <h2>Главные преимущества Codex</h2>
+          <p>Сильнее всего Codex раскрывается там, где нужно соединить инженерное мышление, скорость и аккуратность.</p>
+        </div>
+
+        <div class="grid benefits">
+          <article class="card">
+            <div class="icon">01</div>
+            <h3>Быстрый старт</h3>
+            <p>Может набросать структуру проекта, сверстать первый экран, написать функцию или собрать демо без долгого разгона.</p>
+          </article>
+          <article class="card">
+            <div class="icon">02</div>
+            <h3>Работа с контекстом</h3>
+            <p>Читает файлы, замечает локальные паттерны и подстраивается под стиль существующего кода.</p>
+          </article>
+          <article class="card">
+            <div class="icon">03</div>
+            <h3>Поиск ошибок</h3>
+            <p>Помогает найти регрессии, неочевидные условия, слабые места в тестах и причины странного поведения.</p>
+          </article>
+          <article class="card">
+            <div class="icon">04</div>
+            <h3>Пояснения без пафоса</h3>
+            <p>Разбирает код человеческим языком: что происходит, почему так сделано и где может быть риск.</p>
+          </article>
+          <article class="card">
+            <div class="icon">05</div>
+            <h3>Снижение рутины</h3>
+            <p>Берет на себя повторяющиеся правки, форматирование, мелкую верстку, документацию и подготовку тестов.</p>
+          </article>
+          <article class="card">
+            <div class="icon">06</div>
+            <h3>Итеративность</h3>
+            <p>Можно быстро менять направление: уточнить тон, добавить секцию, переписать компонент или проверить гипотезу.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="limits" class="shell">
+        <div class="split">
+          <div class="soft-panel">
+            <h2>Но Codex не заменяет ответственность человека.</h2>
+            <p>
+              Он ускоряет путь к решению, но результат все равно нужно проверять: запускать тесты,
+              смотреть интерфейс глазами пользователя и принимать архитектурные решения осознанно.
+            </p>
+          </div>
+
+          <div class="list">
+            <article class="list-item">
+              <span>!</span>
+              <div>
+                <h3>Может ошибаться в деталях</h3>
+                <p>ИИ иногда уверенно предлагает неверный API, пропускает крайний случай или неверно понимает скрытое требование.</p>
+              </div>
+            </article>
+            <article class="list-item">
+              <span>!</span>
+              <div>
+                <h3>Зависит от качества контекста</h3>
+                <p>Чем меньше информации о проекте, пользователях и ограничениях, тем больше риск получить красивую, но не ту реализацию.</p>
+              </div>
+            </article>
+            <article class="list-item">
+              <span>!</span>
+              <div>
+                <h3>Не чувствует продуктовую цель сам по себе</h3>
+                <p>Он хорошо исполняет направление, но приоритеты, компромиссы и вкус продукта задает команда или владелец задачи.</p>
+              </div>
+            </article>
+            <article class="list-item">
+              <span>!</span>
+              <div>
+                <h3>Нужна проверка безопасности</h3>
+                <p>Код, работающий с данными, доступами, платежами или приватностью, требует особенно внимательного ревью.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="use" class="shell">
+        <div class="section-head">
+          <h2>Где он особенно полезен</h2>
+          <p>Codex хорош как второй инженер рядом: быстрый, терпеливый и готовый держать в голове много мелочей.</p>
+        </div>
+
+        <div class="grid use-cases">
+          <article class="case">
+            <strong>Прототипы</strong>
+            <p>Проверить идею, собрать первый интерфейс, показать направление без недель разработки.</p>
+          </article>
+          <article class="case">
+            <strong>Рефакторинг</strong>
+            <p>Разобрать сложный участок, вынести повторения, подготовить более понятную структуру.</p>
+          </article>
+          <article class="case">
+            <strong>Обучение</strong>
+            <p>Понять незнакомый код, библиотеку или ошибку через объяснение на обычном языке.</p>
+          </article>
+          <article class="case">
+            <strong>Контроль качества</strong>
+            <p>Проверить изменения, предложить тесты и подсветить места, где поведение может сломаться.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="shell">
+        <div class="summary">
+          <div>
+            <h2>Итог простой: Codex усиливает разработчика.</h2>
+            <p>
+              Он помогает быстрее думать руками, меньше тонуть в рутине и чаще доходить до работающих решений.
+              Но лучший результат получается не от слепого доверия, а от спокойного партнерства: человек задает смысл,
+              ИИ ускоряет исполнение.
+            </p>
+          </div>
+          <a class="button primary" href="#top">Наверх</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="shell">
+      Сделано как простой одностраничный лендинг о возможностях и ограничениях Codex AI.
+    </footer>
+  </body>
+</html>
