@@ -495,7 +495,22 @@
         }
 
         .visual {
-          min-height: 430px;
+          display: grid;
+          gap: 14px;
+          min-height: auto;
+        }
+
+        .workspace {
+          position: relative;
+          inset: auto;
+          min-height: 360px;
+        }
+
+        .floating-card {
+          position: relative;
+          right: auto;
+          bottom: auto;
+          width: 100%;
         }
 
         .benefits,
@@ -541,16 +556,15 @@
         }
 
         .visual {
-          min-height: 390px;
+          min-height: auto;
         }
 
         .workspace {
-          inset: 0;
+          min-height: 350px;
         }
 
         .floating-card {
-          right: 12px;
-          bottom: 12px;
+          padding: 18px;
         }
 
         section {
